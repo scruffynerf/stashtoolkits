@@ -1,0 +1,19 @@
+name: ytdlp Downloader
+description: Download a video with ytdlp
+version: 3.0
+url: https://github.com/scruffynerf/TBD
+exec:
+  - python
+  - plugins/ytdlp/ytdlp.py
+interface: raw
+tasks:
+  - name: Download Video
+    description: Download Videos from url list
+    defaultArgs:
+      mode: download
+
+hooks:
+  - name: TagDownloads
+    description: Tag Videos Downloaded
+    triggeredBy:
+      - Scene.Create.Post

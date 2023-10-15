@@ -1,0 +1,2 @@
+stashapp_tools
+yt_dlp
