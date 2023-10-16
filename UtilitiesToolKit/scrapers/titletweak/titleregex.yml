@@ -1,0 +1,10 @@
+name: "Title Regex"
+sceneByFragment:
+    action: script
+    script:
+      - python
+      # use python3 instead if needed
+      - titleregex.py
+      - query
+
+# Last Updated Oct 15, 2023
