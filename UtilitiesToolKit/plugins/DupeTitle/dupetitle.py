@@ -129,7 +129,7 @@ def checktitle(scene):
     log.debug(f"no change to {scene['id']} - {scene['title']}")
     return
 
-def checkduration(scene, filter):
+def checkduration(scene, filter={}):
     # add duration filter
     existing_tags = get_names(scene.get("tags"))
     filterlimits = {}
