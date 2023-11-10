@@ -1,0 +1,35 @@
+name: The Title of Your Plugin
+description: What it does goes here
+version: 0.1
+url: https://github.com/yourrepogoeshere
+exec:
+  - python
+  - "{pluginDir}/pluginskel.py"
+interface: raw
+settings:
+  mybool:
+    displayName: Boolean Setting 1
+    description: On/Off, True/False, Enable/Disable
+    type: BOOLEAN
+  mynum:
+    displayName: Number Setting
+    description: Quantity or other numbers
+    type: NUMBER
+  mystring:
+    displayName: The Magic Word
+    description: Words and other Strings
+    type: STRING
+hooks:
+  - name: HookNameGoesHere
+    description: Hook Description
+    triggeredBy:
+      - Scene.Update.Post
+tasks:
+  - name: 'Task with a Button'
+    description: Description of Task
+    defaultArgs:
+      mode: task1codetorun
+  - name: 'Task 2'
+    description: Description of Task 2
+    defaultArgs:
+      mode: task2codetorun
