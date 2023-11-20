@@ -1,0 +1,17 @@
+name: FansDB.cc migrator
+description: Migrates from FansDB.xyz to FansDB.cc
+version: 0.1
+exec:
+  - python
+  - "{pluginDir}/fans-migrate.py"
+interface: raw
+tasks:
+  - name: 'Check'
+    description: Check for fansdb.xyz entries
+    defaultArgs:
+      mode: check
+  - name: 'Migrate'
+    description: Migrate fansdb.xyz entries
+    defaultArgs:
+      mode: migrate
+
