@@ -47,10 +47,19 @@ def updateTables():
     count = updateTable(table)
     log.info("Replaced %d FansDB.xyz URLs in %s" % (count, table_name))
 
+def backup():
+  query = """
+  mutation backupDatabase {
+      backupDatabase(input: { download: false })
+  }
+  """
+  stash._callGraphQL(query)
+
 def main():
   if MODE == "check":
     checkTables()
   elif MODE == "migrate":
+    backup()
     updateTables()
   log.exit("Plugin exited normally.")
 
