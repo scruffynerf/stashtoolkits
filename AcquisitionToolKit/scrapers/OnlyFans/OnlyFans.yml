@@ -53,7 +53,7 @@ xPathScrapers:
   performerScraper:
     performer:
       Name:
-        selector: //div[@class='b-username-row m-gap-lg']/div[@class='b-username']
+        selector: //div[@class='b-username-row m-gap-lg']/div[@class='b-username']/div[@class='g-user-name m-verified m-lg-size']
       Aliases: 
         selector: //div[@class='b-profile__user']/div[@class='b-profile__names mw-0 w-100 mw-100']/div[@class='b-username-row']/div[@class='g-user-realname__wrapper m-nowrap-text']/div[@class='g-user-username']
         postProcess:
@@ -68,8 +68,14 @@ xPathScrapers:
           - replace:
               - regex: "^@"
                 with: 'https://onlyfans.com/'
+      CareerLength:
+        selector: //div[@class='l-profile-page']/ul
+        postProcess:
+          - replace:
+              - regex: "posts"
+                with: 'Posts '
       Details:
-        selector: //div[@class='g-truncated-text m-collapsed']/div[@class='b-user-info__text m-break-word']/p
+        selector: //div[@class='b-user-info__content']
       Image:
         selector: //div[@class='b-profile__user']//div[@class='g-avatar__img-wrapper']/img/@src
         postProcess:

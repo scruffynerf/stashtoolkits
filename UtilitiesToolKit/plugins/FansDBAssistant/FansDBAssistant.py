@@ -183,8 +183,12 @@ def scrape_of_performer(performer, url):
        else:
           updating["aliases"] = scraped["aliases"]
        updating["details"] = scraped.get("details")
-       updating["image"] = scraped.get("images")[0]
+       if scraped.get("images"):
+          updating["image"] = scraped.get("images")[0]
        log.info(f"OnlyFans account found - {updating['name']} - {updating['url']}")
+       if scraped.get('career_length') == "No Posts No Media":
+           updating['name'] = performer.get('name') + " - UNVERIFIED USER"
+           log.info(f"Unverified OnlyFans account - flagging this")
     else:
        log.info(f"No OnlyFans account found for {performer.get('name')}")
        updating["disambiguation"] = "OnlyFans not found"
