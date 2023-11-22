@@ -63,6 +63,14 @@ def checkTables():
     count = checkTable(table)
     log.info("Found %d FansDB.xyz URLs in %s" % (count, table_name))
 
+def backup():
+  query = """
+  mutation backupDatabase {
+      backupDatabase(input: { download: false })
+  }
+  """
+  stash._callGraphQL(query)
+
 def updateTable(table):
   query = """
     mutation ExecSQL($sql: String!) {
@@ -90,24 +98,24 @@ def scrapeendpointforperformer(performer, stashid = ""):
 
     if stashid:
        scraped = stashbox.find_performer(stashid)
-       log.debug(scraped)
+       #log.debug(scraped)
        updating = {}
        updating["id"] = performer.get('id')
        if scraped:
           for thisurl in scraped["urls"]:
               if thisurl['type'] == "ONLYFANS":
                  updating["url"] = thisurl["url"]
-       log.debug(updating)
+       #log.debug(updating)
        result = stash.update_performer(updating)
-       log.debug(result)
-       getof_id = stash.find_tag(getof_tag, create=True).get('id')
-       stash.update_performers({
-            'ids': [performer.get('id')],
-            'tag_ids': {
-                'mode': 'REMOVE',
-                'ids': [getof_id]
-            }
-       })
+       #log.debug(result)
+       #getof_id = stash.find_tag(getof_tag, create=True).get('id')
+       #stash.update_performers({
+       #     'ids': [performer.get('id')],
+       #     'tag_ids': {
+       #         'mode': 'REMOVE',
+       #         'ids': [getof_id]
+       #     }
+       #})
        return True
     # no stashid, we need to search harder:
     search = {}
@@ -116,7 +124,7 @@ def scrapeendpointforperformer(performer, stashid = ""):
     else:
        search['url'] = "https://onlyfans.com/" + performer.get("name")
     scraped = stashbox.find_performers(search)
-    log.debug(scraped)
+    #log.debug(scraped)
     if scraped and len(scraped) == 1:
         updating = {}
         updating["id"] = performer['id']
@@ -130,9 +138,9 @@ def scrapeendpointforperformer(performer, stashid = ""):
         newid['stash_id'] = scraped[0]['id']
         updating['stash_ids'].append(newid)
 
-        log.debug(updating)
+        #log.debug(updating)
         result = stash.update_performer(updating)
-        log.debug(result)
+        #log.debug(result)
         query = """ mutation updateperformer($input: StashBoxBatchTagInput!) {stashBoxBatchPerformerTag(input: $input)}"""
         batch_input = {"endpoint": endpointindex,
                        "refresh": True,
@@ -160,7 +168,7 @@ def submitperformer(performer):
 
 def scrape_of_performer(performer, url):
     scraped = stash.scrape_performer_url(url)
-    log.debug(scraped)
+    #log.debug(scraped)
     updating = {}
     updating["id"] = performer.get('id')
     if scraped:
@@ -176,9 +184,9 @@ def scrape_of_performer(performer, url):
           updating["aliases"] = scraped["aliases"]
        updating["details"] = scraped.get("details")
        updating["image"] = scraped.get("images")[0]
-       log.debug(f"OnlyFans account found - {updating['name']} - {updating['url']}")
+       log.info(f"OnlyFans account found - {updating['name']} - {updating['url']}")
     else:
-       log.debug("No OnlyFans account found!")
+       log.info(f"No OnlyFans account found for {performer.get('name')}")
        updating["disambiguation"] = "OnlyFans not found"
     #log.debug(updating)
     result = stash.update_performer(updating)
@@ -209,20 +217,16 @@ def main():
         log.debug("--Starting " + pluginhumanname + " Plugin --")
 
         if PLUGIN_ARGS == "check":
+           log.info("Checking for old fansdb.xyz stashids")
            checkTables()
-           exit_plugin(f"{pluginhumanname} checked for old fansdb urls and exited normally.")
+           exit_plugin(f"{pluginhumanname} checked for old fansdb stashids and exited normally.")
         elif PLUGIN_ARGS == "migrate":
+           log.info("Backing up DB for safety...")
+           backup()
+           log.info("Updating stashids from fansdb.xyz to fansdb.cc")
            updateTables()
+           log.warning("If you haven't yet, change your FansDB endpoint url from fansdb.xyz to fansdb.cc!")
            exit_plugin(f"{pluginhumanname} migrated to new fansdb urls  and exited normally.")
-
-        if "getendpointperformers" in PLUGIN_ARGS:
-            log.debug("running Get Performer Names")
-            chosenendpoint = {}
-            #chosenendpoint['stash'] = StashInterface(FRAGMENT_SERVER)
-            c = stash.get_stashbox_connection(config.endpoint)
-            chosenendpoint['api_key'] = c.get("api_key")
-            chosenendpoint['endpoint'] = config.endpoint
-            getendpointperformers(chosenendpoint)
 
         exit_plugin(pluginhumanname + " plugin finished")
 
@@ -235,19 +239,24 @@ def main():
 
     config = stash.get_configuration()
     allstashboxes = config['general']['stashBoxes']
-    log.debug(allstashboxes)
+    #log.debug(allstashboxes)
 
     for boxindex, box in enumerate(allstashboxes):
         if 'fansdb' in box.get('endpoint'):
-           log.debug(box)
+           #log.debug(box)
            endpoint = box
            endpointindex = boxindex
-    log.debug(endpoint)
+    #log.debug(endpoint)
+
+    global getof_tag, getof_id
+    global getfansly_tag, getfansly_id
 
     getof_tag = "AddOFUrl"
     getfansly_tag = "AddFanslyUrl"
     getof_id = stash.find_tag(getof_tag, create=True).get('id')
     getfansly_id = stash.find_tag(getfansly_tag, create=True).get('id')
+
+    global submitted_id, tosubmit_id
     submitted_id = stash.find_tag("SubmittedtoFansDB", create=True).get("id")
     tosubmit_id = stash.find_tag("SubmittoFansDB", create=True).get("id")
 
