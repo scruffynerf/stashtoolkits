@@ -1,0 +1,23 @@
+name: "FansDB Assistant"
+description: Adds a number of FansDB utilities
+url: https://github.com/scruffynerf/stashstuff
+version: 0.1
+exec:
+  - python3.11
+  - "{pluginDir}/FansDBAssistant.py"
+interface: raw
+hooks:
+  - name: FansDB Performer URL fixing
+    description: Fixes performers URLs
+    triggeredBy:
+      - Performer.Update.Post
+tasks:
+  - name: 'Check'
+    description: Check for old fansdb.xyz entries
+    defaultArgs:
+      mode: check
+  - name: 'Migrate'
+    description: Migrate fansdb.xyz entries to fansdb.cc
+    defaultArgs:
+      mode: migrate
+
