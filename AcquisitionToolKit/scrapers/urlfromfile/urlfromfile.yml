@@ -1,0 +1,9 @@
+name: Assign URL from lookup by file
+sceneByFragment:
+    action: script
+    script:
+      - python
+      # use python3 instead if needed
+      - urlfromfile.py
+      - query
+# Last Updated Nov 24, 2023

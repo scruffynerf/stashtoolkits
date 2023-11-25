@@ -1,0 +1,11 @@
+#### EDIT ME
+stashconfig = {
+    "scheme": "http",
+    "Host":"localhost",
+    "Port": "9999",
+    "ApiKey": "",
+}
+datafile = "urls.txt"
+separator = "|"
+splitorder = 0
+scrapeafter = True
